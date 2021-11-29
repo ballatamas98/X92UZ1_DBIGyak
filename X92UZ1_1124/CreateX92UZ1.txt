@@ -1,0 +1,39 @@
+create database x92uz1;
+use x92uz1;
+CREATE TABLE Hallhato (
+    neptunkod char(6) NOT NULL primary key,
+    nev char NOT NULL,
+    tankor char NOT NULL,
+    szul_d date NOT NULL,
+    eletkor int ,
+    irszám int(4) NOT NULL,
+    varos char(20) NOT NULL,
+    utca char(50) NOT NULL,
+    hsz int(4) NOT NULL 
+);
+CREATE TABLE Oktato (
+    neptunkod char(6) NOT NULL primary key,
+    nev char NOT NULL,
+    tanszek char NOT NULL
+);
+CREATE TABLE Targy (
+    kod char NOT NULL primary key,
+    kredit char NOT NULL,
+    megnevezes char NOT NULL
+);
+CREATE TABLE oktat (
+	neptunkod char,
+	kod char,
+    FOREIGN KEY (neptunkod)  REFERENCES Oktato(neptunkod),
+	FOREIGN KEY (kod)  REFERENCES Targy(kod)
+);
+CREATE TABLE hallgat (
+    neptunkod char,
+	kod char,
+    felev char,
+    vizsgajegy INT(3),
+    FOREIGN KEY (neptunkod)  REFERENCES Hallhato(neptunkod),
+	FOREIGN KEY (kod)  REFERENCES Targy(kod)
+);
+
+
