@@ -1,0 +1,30 @@
+1.Az autók és tulajdonosuk adatai.
+select * from Auto LEFT JOIN Szemely ON Auto.tulajdonos = Szemely.szid;
+ Auto.rendszam, Auto.marka, Auto.tipus, Auto.tulajdonos, Szemely.szid, Szemely.vezeteknev, Szemely.keresztnev  (Auto + Auto.tulajdonos = Szemely.szid Szemely) 
+2. Az ebtartók nevei.
+select Szemely.vezeteknev, Szemely.keresztnev from Szemely RIGHT JOIN Eb ON EB.gazda = Szemely.szid ;
+ Szemely.vezeteknev, Szemely.keresztnev (Szemely + Eb.gazda = Szemely.szid Eb)
+3. Személyek nevei és területük címei.
+select Szemely.vezeteknev, Szemely.keresztnev, Telek.utca, Telek.hsz from Szemely JOIN Tulaj ON Tulaj.tulajdonos = Szemely.szid JOIN Telek ON Tulaj.hrsz = Telek.hrsz;
+ Szemely.vezeteknev, Szemely.keresztnev, Telek.utca, Telek.hsz (Szemely  Tulaj.tulajdonos=Szemely.szid Tulaj  Tulaj.hrsz = Telek.hrsz Telek)
+4.Hany Németjuhász fajtájú kutya van.
+select COUNT(Eb.chip) from Eb  where Eb.fajta='Németjuhász';
+ COUNT(Eb.chip)(  Eb.fajta='Németjuhász'(Eb))
+5.Személyek nevei és hogy van-e tartuzásuk.
+select Szemely.vezeteknev, Szemely.keresztnev, Szemely_vallakozas.tartozas from Szemely RIGHT JOIN Szemely_vallakozas ON Szemely.szid = Szemely_vallakozas.szid  ;
+ Szemely.vezeteknev, Szemely.keresztnev Szemely_vallakozas.tartozas(Szemely  Szemely.szid = Szemely_vallakozas.szid  Szemely_vallakozas)
+6.Az átlagnál nagyobb területű telkek tulajdonosainak neve és a terület hrsz.
+select Szemely.vezeteknev, Szemely.keresztnev, Telek.hrsz from Szemely JOIN Tulaj ON Tulaj.tulajdonos = Szemely.szid JOIN Telek ON Tulaj.hrsz = Telek.hrsz where Telek.terulet>(SELECT AVG(Telek.terulet) FROM Telek);
+ Szemely.vezeteknev, Szemely.keresztnev Telek.hrsz (Telek.terulet>(avg(Telek.terulet)(Telek)) (Szemely  Tulaj.tulajdonos=Szemely.szid Tulaj  Tulaj.hrsz = Telek.hrsz Telek))
+7.Azon autók darabszáma amiknek a tulajdonosai az iskola úton laknak
+select COUNT(Auto.rendszam) from Auto JOIN Szemely ON Auto.tulajdonos = Szemely.szid   JOIN Tulaj ON Tulaj.tulajdonos = Szemely.szid  JOIN Telek ON Tulaj.hrsz = Telek.hrsz where Telek.utca like 'Iskola%';
+ COUNT(Auto.rendszam)( Telek.utca like 'Iskola%' (Auto  Auto.tulajdonos = Szemely.szid Szemely  Tulaj.tulajdonos=Szemely.szid Tulaj  Tulaj.hrsz = Telek.hrsz Telek))
+8.A 10 000 000 Forintnál nagyobb bevételű tartozással nem rendelkező vállalkozások címei és neve.
+select Telek.utca, Telek.hsz, Vallalkozas.vallakozas_neve from Vallalkozas JOIN Telek ON Vallalkozas.szekhely = Telek.hrsz JOIN Szemely_vallakozas ON Vallalkozas.uzemelteto = Szemely_vallakozas.szid where (Vallalkozas.bevetel>10000000 and Szemely_vallakozas.tartozas=false);
+ Telek.utca, Telek.hsz, Vallalkozas.vallakozas_neve (Vallalkozas.bevetel>10000000 and Szemely_vallakozas.tartozas=false(Vallalkozas  Vallalkozas.szekhely = Telek.hrsz Telek  Vallalkozas.uzemelteto = Szemely_vallakozas.szid Szemely_vallakozas))
+9.Az átlagnál kevesebb bevétellel rendelkező vállalkozások üzemeltetőinek neve.
+select Szemely.vezeteknev, Szemely.keresztnev from Szemely JOIN Vallalkozas ON Vallalkozas.uzemelteto = Szemely.szid where Vallalkozas.bevetel<(SELECT AVG(Vallalkozas.bevetel) FROM Vallalkozas);
+ Szemely.vezeteknev, Szemely.keresztnev (Vallalkozas.bevetel >(avg(Vallalkozas.bevetel)( Vallalkozas)) (Szemely  Vallalkozas.uzemelteto = Szemely.szid Vallalkozas))
+10.A vállalkozást üzemeltető személyek autóinak száma.
+select Szemely.vezeteknev, Szemely.keresztnev, COUNT(Auto.rendszam )  from Szemely JOIN Vallalkozas ON Vallalkozas.uzemelteto = Szemely.szid JOIN Auto ON Auto.tulajdonos = Szemely.szid GROUP BY Szemely.szid;
+ Szemely.vezeteknev, Szemely.keresztnev (Auto.rendszam COUNT(Auto.rendszam ) as DB_auto(Szemely  Vallalkozas.uzemelteto = Szemely.szid Vallalkozas Auto.tulajdonos = Szemely.szid Auto))
